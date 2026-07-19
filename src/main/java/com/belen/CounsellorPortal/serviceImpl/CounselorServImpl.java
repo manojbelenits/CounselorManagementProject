@@ -25,6 +25,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +40,7 @@ public class CounselorServImpl {
    private final EnrollmentRepo enrollmentRepo;
    private final EntityManager em;
    private final AuthenticationManager authenticationManager;
+   private final JwtService jwtService;
 
 
    @Transactional
@@ -57,24 +60,19 @@ public class CounselorServImpl {
    }
 
 
-   public Counselor counselorLogin(LoginReqDto loginReqDto){
+   public String counselorLogin(LoginReqDto loginReqDto)  {
 
        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginReqDto.getEmail(), loginReqDto.getPassword());
 
        Authentication authenticate = authenticationManager.authenticate(token);
 
-       Counselor coun=null;
+      if(authenticate.isAuthenticated()){
+          return jwtService.generateToken(loginReqDto.getEmail());
+      }
+      else{
+          return "Login Failed";
+      }
 
-       try{
-           if(authenticate.isAuthenticated()){
-               coun= counselorRepo.findCounselorByEmail(loginReqDto.getEmail()).orElseThrow();
-           }
-       }
-       catch (Exception e){
-
-           throw new RuntimeException("Login Failed");
-       }
-        return coun;
    }
 
 

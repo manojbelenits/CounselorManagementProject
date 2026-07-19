@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -33,10 +34,9 @@ public class CounselorController {
 
 
     @GetMapping("/login")
-    public ResponseEntity<Counselor> loginEndPoint(@Valid @RequestBody LoginReqDto loginReqDto){
-        Counselor counselor = servImpl.counselorLogin(loginReqDto);
-
-        return new ResponseEntity<>(counselor,HttpStatus.OK);
+    public ResponseEntity<String> loginEndPoint(@Valid @RequestBody LoginReqDto loginReqDto){
+        String token = servImpl.counselorLogin(loginReqDto);
+        return new ResponseEntity<>(token,HttpStatus.OK);
     }
 
 
